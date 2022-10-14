@@ -33,32 +33,37 @@ class Controller(
         )  // Return if connection fail
 
         // Prepare variables for DB reading
-        val query = connection.prepareStatement("SELECT * FROM UserList")
-        val result = query.executeQuery()
+        val query = connection.prepareStatement(
+            "SELECT * FROM UserList WHERE Username = '$username'"
+        ).executeQuery()
         var data = AuthData(-1, "UserNotFound", "", "", "")
 
-        while (result.next()) {
-            // Get auth data from DB
-            val id = result.getInt("userID")
-            val name = result.getString("Username")
-            val email = result.getString("Email")
-            val phone = result.getString("Phone")
-            val hash = result.getString("PasswdHash")
+        if (query.next()) data = AuthData(
+            query.getInt("userID"), query.getString("Username"),
+            query.getString("Email"), query.getString("Phone"),
+            query.getString("PasswdHash")
+        ) // Get auth data from DB and add it to data variable
 
-            if (name == username) data = AuthData(id, name, email, phone, hash) // Add get user to data
-        }
         return data
     }
 
-    fun postAuthData(): AuthData {
-        if (!connection.isValid(0)) return AuthData(
-            -1, "DBNotConnected", "", "", ""
-        )  // Return if connection fail
+    fun postAuthData(username: String, hash: String, email: String, phone: String) {
+        if (!connection.isValid(0)) return  // Return if connection fail
 
-        val query = connection.prepareStatement("INSERT INTO UserList ()")
+        val lastID = connection.prepareStatement(
+            "SELECT COUNT(DataID) FROM UserList"
+        ).executeQuery(); lastID.next()
+        val lid = lastID.getInt("COUNT(DataID)")
+        val lastUser = connection.prepareStatement(
+            "SELECT * FROM UserList WHERE DataID = '$lid'"
+        ).executeQuery(); lastUser.next()
+
+        val dataID = lastUser.getInt("DataID") + 1
+        val userID = lastUser.getInt("UserID") + 1
+
+        connection.createStatement().execute(
+            "INSERT INTO UserList (`DataID`, `UserID`, `Username`, `Email`, `Phone`, `PasswdHash`) " +
+                    "VALUES ('$dataID', '$userID', '$username', '$email', '$phone', '$hash')"
+        ); connection.commit()
     }
-    /* TODO
-        1) sendAuthData function
-        2-3) (get and send)UserData function
-     */
 }

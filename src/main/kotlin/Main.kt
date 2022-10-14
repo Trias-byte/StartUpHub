@@ -5,4 +5,7 @@ fun main(){
     )
     val user = maria.getAuthData("TestT")
     println(user)
+    // maria.postAuthData("Test2", "edf56hy", "example@exmp.com", "88005553535")
+
+    println("password".hashCode())
 }
