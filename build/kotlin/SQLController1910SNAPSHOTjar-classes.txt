@@ -1,0 +1,1 @@
+C:\Users\super\Documents\SQLController-19\build\classes\kotlin\main\Controller$AuthData.class;C:\Users\super\Documents\SQLController-19\build\classes\kotlin\main\Controller$UserData.class;C:\Users\super\Documents\SQLController-19\build\classes\kotlin\main\Controller.class;C:\Users\super\Documents\SQLController-19\build\classes\kotlin\main\MainKt.class
