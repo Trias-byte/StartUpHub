@@ -12,6 +12,7 @@ class Controller(
         val userID: Int, val name: String, val google: String, val stepik: Int, val skills: String
     )  // Model class for user data
     private var connection: Connection
+    private val empty = AuthData(-1, "Empty", "", "", "")
 
     init { // Open connection
         Class.forName("org.mariadb.jdbc.Driver")
@@ -49,7 +50,13 @@ class Controller(
         return data
     }
 
-    fun postAuthData()
+    fun postAuthData(): AuthData {
+        if (!connection.isValid(0)) return AuthData(
+            -1, "DBNotConnected", "", "", ""
+        )  // Return if connection fail
+
+        val query = connection.prepareStatement("INSERT INTO UserList ()")
+    }
     /* TODO
         1) sendAuthData function
         2-3) (get and send)UserData function
