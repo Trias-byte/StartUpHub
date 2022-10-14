@@ -72,7 +72,7 @@ class Controller(
         )  // Return if connection fail
 
         val query = connection.prepareStatement(
-            "SELECT * FROM UserList WHERE UserID = '$userID'"
+            "SELECT * FROM UserData WHERE UserID = '$userID'"
         ).executeQuery()
         var data = UserData(-1, "UserNotFound", "", 0, "")
         if (query.next()) data = UserData(
@@ -98,7 +98,7 @@ class Controller(
         val userID = lastUser.getInt("UserID") + 1
 
         connection.createStatement().execute(
-            "INSERT INTO UserList (`DataID`, `UserID`, `Fullname`, `Google`, `Stepik`, `Skills`) " +
+            "INSERT INTO UserData (`DataID`, `UserID`, `Fullname`, `Google`, `Stepik`, `Skills`) " +
                     "VALUES ('$dataID', '$userID', '$fullname', '$gmail', '$stepikID', '$skills')"
         ); connection.commit()
     }
