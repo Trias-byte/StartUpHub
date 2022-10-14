@@ -12,7 +12,6 @@ class Controller(
         val userID: Int, val name: String, val google: String, val stepik: Int, val skills: String
     )  // Model class for user data
     private var connection: Connection
-    private val empty = AuthData(-1, "Empty", "", "", "")
 
     init { // Open connection
         Class.forName("org.mariadb.jdbc.Driver")
@@ -64,6 +63,43 @@ class Controller(
         connection.createStatement().execute(
             "INSERT INTO UserList (`DataID`, `UserID`, `Username`, `Email`, `Phone`, `PasswdHash`) " +
                     "VALUES ('$dataID', '$userID', '$username', '$email', '$phone', '$hash')"
+        ); connection.commit()
+    }
+
+    fun getUserData(userID: Int): UserData {
+        if (!connection.isValid(0)) return UserData(
+            -1, "DBNotConnected", "", 0, ""
+        )  // Return if connection fail
+
+        val query = connection.prepareStatement(
+            "SELECT * FROM UserList WHERE UserID = '$userID'"
+        ).executeQuery()
+        var data = UserData(-1, "UserNotFound", "", 0, "")
+        if (query.next()) data = UserData(
+            query.getInt("userID"), query.getString("Fullname"),
+            query.getString("Google"), query.getInt("Stepik"),
+            query.getString("Skills")
+        ) // Get auth data from DB and add it to data variable
+        return data
+    }
+
+    fun postUserData(fullname: String, gmail: String, stepikID: Int, skills: String) {
+        if (!connection.isValid(0)) return  // Return if connection fail
+
+        val lastID = connection.prepareStatement(
+            "SELECT COUNT(DataID) FROM UserData"
+        ).executeQuery(); lastID.next()
+        val lid = lastID.getInt("COUNT(DataID)")
+        val lastUser = connection.prepareStatement(
+            "SELECT * FROM UserData WHERE DataID = '$lid'"
+        ).executeQuery(); lastUser.next()
+
+        val dataID = lastUser.getInt("DataID") + 1
+        val userID = lastUser.getInt("UserID") + 1
+
+        connection.createStatement().execute(
+            "INSERT INTO UserList (`DataID`, `UserID`, `Fullname`, `Google`, `Stepik`, `Skills`) " +
+                    "VALUES ('$dataID', '$userID', '$fullname', '$gmail', '$stepikID', '$skills')"
         ); connection.commit()
     }
 }
